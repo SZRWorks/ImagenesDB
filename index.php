@@ -1,30 +1,40 @@
+<!-- Try 4 -->
 <?php
-include_once 'php/Conexion.inc.php';
+    include_once 'php/Conexion.inc.php';
 
-$envio = filter_input(INPUT_POST, 'enviar');
-Conexion::abrirConexion();
+    Conexion::abrirConexion(); 
 
-if (isset($envio)) {
-    if (is_uploaded_file($_FILES['image']['tmp_name'])) {
-        try{
-        $imgContent = file_get_contents($_FILES['image']['tmp_name']);
-        //$imgContent = fopen($_FILES['image']['tmp_name'], 'rb');
-        $imageProperties = getimageSize($_FILES['image']['tmp_name']);
+    if ($_POST)
+    {
+        if ($_POST["enviar"])
+        {
+            /// Guardar imagen en el servidor
+            /// Solo de manera temporal.
+            copy($_FILES['image']['tmp_name'], "temp/temp_img.png");
 
-        $sql = "INSERT INTO images (imagen, type) VALUES (:image, :type)";
-        $sentencia = Conexion::getConexion()->prepare($sql);
-        $sentencia->bindParam(':image', $imgContent, PDO::PARAM_LOB);
-        $sentencia->bindParam(':type', $imageProperties['mime'], PDO::PARAM_STR);
-        $insert = $sentencia->execute();
+            /// Obtener la ruta absoluta de la imagen
+            $temp_img_route = $_SERVER['DOCUMENT_ROOT']."/ImagenesDB/temp/temp_img.png";
 
-        $aviso = ($insert) ? "Imagen Subida Exitosamente!" : "Algo salio mal, intentalo de nuevo";
-        echo $aviso;
-        }catch (PDOException $ex){
-            echo $ex->getMessage();
+            /// Crear sentencia para
+            /// subir la imagen a la DB
+            $sql = "INSERT INTO `images` (`imagen`, `type`) VALUES (LOAD_FILE('".$temp_img_route."'), '".$_FILES['image']['type']."')";
+
+            /// Ejecutar sentencia SQL
+            $sentencia = Conexion::getConexion()->prepare($sql);
+            $insert = $sentencia->execute();
+            $aviso = ($insert) ? "Imagen Subida Exitosamente!" : "Algo salio mal, intentalo de nuevo";
+
+            echo $aviso;
+
+            /// Eliminar imagen temporal del servidor
+            unlink("temp/temp_img.png");
         }
     }
-}
+
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -37,12 +47,15 @@ if (isset($envio)) {
         <form class="w3-display-topmiddle" method="POST" enctype="multipart/form-data">
             <p>
                 <label for="image">Subir Imagen</label>
-                <input class="w3-input w3-border" style="overflow: hidden;" type="file" name="image" accept="image/*" alt="" required=""/>
+                <input class="w3-input w3-border" style="overflow: hidden;" type="file" name="image" id="image" accept="image/*" alt="" required=""/>
             </p>
             <p>
-                <input class="w3-input" type="submit" name="enviar" value="enviar"/>
+                <input class="w3-input" type="submit" name="enviar" id="enviar" value="Enviar"/>
             </p>
         </form>
+
+        <center>
+
         <div class="w3-container">
             <?php
             foreach (Conexion::getConexion()->query("SELECT * FROM images") as $row) {

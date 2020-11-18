@@ -11,7 +11,7 @@
 CREATE DATABASE imagesDB;
 USE imagesDB;
 
-CREATE TABLE imagenes(
+CREATE TABLE images(
     id int primary key AUTO_INCREMENT,
     type varchar(255),
     imagen longblob
