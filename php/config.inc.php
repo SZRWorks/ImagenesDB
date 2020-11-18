@@ -3,7 +3,7 @@
 define('NOMBRE_SERVIDOR', 'localhost');
 define('NOMBRE_USUARIO', 'root');
 define('PASSWORD', '');
-define('NOMBRE_BD', 'imagesDB');
+define('NOMBRE_BD', 'imagesdb');
 
 //URLS
 define('SERVIDOR', 'http://localhost/imagesDB/');
