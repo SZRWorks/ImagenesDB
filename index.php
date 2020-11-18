@@ -22,8 +22,11 @@
             /// Ejecutar sentencia SQL
             $sentencia = Conexion::getConexion()->prepare($sql);
             $insert = $sentencia->execute();
+
+            /// Verificar si la imagen se a subido correctamente
             $aviso = ($insert) ? "Imagen Subida Exitosamente!" : "Algo salio mal, intentalo de nuevo";
 
+            /// Imprimir resultado del aviso
             echo $aviso;
 
             /// Eliminar imagen temporal del servidor
@@ -37,12 +40,14 @@
 
 <!DOCTYPE html>
 <html>
+
     <head>
         <title>ImagesDB</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="css/w3.css">
     </head>
+
     <body>
         <form class="w3-display-topmiddle" method="POST" enctype="multipart/form-data">
             <p>
@@ -65,6 +70,10 @@
             ?>
         </div>
     </body>
+
 </html>
+
 <?php
+
 Conexion::cerrarConexion();
+
